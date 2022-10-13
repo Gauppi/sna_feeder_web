@@ -1,0 +1,144 @@
+body {
+        background-color: #53AAE6;
+  }
+  
+  .logo {
+        width: 200px;
+  }
+
+
+  h1{
+        color: #ddd;
+        text-decoration-line: underline;
+        text-decoration-color: white;
+        margin-left: 10px;
+  }
+  h2 {
+        color: white;
+        text-decoration-line: underline;
+        text-decoration-color: white;
+        margin-left: 10px;
+  }
+  
+  input[type=text] {
+        width: 80%;
+        height: 220 px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-size: 32px;
+        font-family: sans-serif;
+        font-weight: 300;
+        background-color: white;
+        background-image: url('search.png');
+        background-size: 64px 64px;
+        background-position: 10px 10px; 
+        background-repeat: no-repeat;
+        padding: 24px 80px 24px 80px;
+        margin-left: 10px;
+    
+  }
+  
+  table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+  
+    ul {
+        list-style: none;
+    }
+    
+    label {
+        cursor: pointer;
+    }
+    
+    ul, li {
+        margin: 0;
+        padding: 0;
+        background-color: white;
+    }
+    
+    li {
+        padding: 0.5em;
+    }
+    
+    .filters {
+        width: 420px;
+        box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.3);
+        padding: 1.5em;
+        position: absolute;
+    }
+    
+    .filters__list li {
+        display: flex;
+        align-items: center;
+        user-select: none;
+        padding-bottom: 1em;
+        line-height: 0;
+    }
+    
+    .filters__list li:last-child {
+      padding-bottom: 0;
+    }
+    
+    input[type="checkbox"] {
+        width: 40px;
+        height: 40px;
+        margin-right: 0.5em;
+    }
+    
+    .filters:not(.filters--active) {
+        display: none;
+    }
+    
+    .buttonsend {
+        background: rgb(7, 37, 118);
+        padding: 1em 2em;
+        text-transform: uppercase;
+        color: #f5f5f5;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        border: 0;
+        outline: 0;
+        text-align: left;
+    }
+  
+    .button {
+        background: rgb(7, 37, 118);
+        padding: 1em 2em;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        border: 0;
+        outline: 0;
+        text-align: left;
+        min-width: 150px;
+        min-height: 80px;
+        display: inline-flex;
+        justify-content: space-between;
+        color: #f5f5f5;
+        cursor: pointer;
+    }
+    
+    .button::after {
+        font-family: sans-serif;
+        content: "▼";
+        padding-left: 0.5em;
+    }
+    
+    .button--highlight::after {
+        content: "✓";
+    }
+  
+  

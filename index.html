@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <title>Small World finder</title>
+  <div>
+    <img class="logo" src="logo.png">
+    <h1> Small World Analyser </h1>
+  </div>
+  
+</head>
+<body>
+   <h2 id="term"> Sie suchen nach: .... <h2>
+     <input type="text" id="sterm" name="search" value="tractor accidents">
+     <button id="btnsend" onclick="search()" class="buttonsend">Suchen</button>
+     <br>
+     <br>
+     <button id="filter-button" class="button">Filter</button>
+
+<!-- Filter Button -->
+    <div id="filter-container" class="filters">
+      <ul class="filters__list">
+        <li>
+          <input id="f1" type="checkbox" />
+          <label for="f1">Autorennetz</label>
+        </li>
+        <li>
+          <input id="f2" type="checkbox" />
+          <label for="f2">Artikelnetz</label>
+        </li>
+        <li>
+          <input id="f3" type="checkbox" />
+          <label for="f3">Reviews only</label>
+        </li>
+        <li>
+          <input id="f4" type="checkbox" />
+          <label for="f4">Influencer</label>
+        </li>
+      </ul></div>
+
+     <br>
+     <h2>Resultate</h2> <label id="nresults" > </label>
+     <ul id="output"></ul>
+     <br>
+</body>
+</html>
+
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script src="script.js"></script>
+
+<script>
+  var button = document.getElementById("filter-button");
+  var container = document.getElementById("filter-container");
+  var input = document.querySelectorAll("input");
+
+  //Erstelle ein Eventlistener für eine Taste (gedrückt)
+  window.onkeyup = keyup;
+
+  //Erstelle globale Javascript Variabel
+  var inputTextValue;
+  let pubarticle;
+  var buttonsend = document.querySelector("#btnsend");
+  let db = "pubmed";
+  let domain = "https://www.ncbi.nlm.nih.gov/entrez/eutils";
+  const api_key = "c72fa54671a1370f4b98eeeae182a249e908";
+  let nresults = 100;
+  let query = "";
+  let retmode='json';
+
+  //Filter funktionen
+  button.onclick = function (e) {
+    e.stopPropagation();
+    if (container.classList.contains("filters--active")) {
+      container.classList.remove("filters--active");
+    } else {
+      container.classList.add("filters--active");
+    }
+  };
+
+  container.onclick = function (e) {
+    e.stopPropagation();
+  };
+
+  window.onclick = function () {
+    container.classList.remove("filters--active");
+  };
+
+  console.log(input);
+
+  for (var i = 0; i < input.length; i++) {
+    var currentInput = input[i];
+
+    currentInput.onclick = function () {
+      var isChecked = false;
+      for (var j = 0; j < input.length; j++) {
+        if (input[j].checked) {
+          isChecked = true;
+          break;
+        }
+      }
+
+      if (isChecked) {
+        button.classList.add("button--highlight");
+      } else {
+        button.classList.remove("button--highlight");
+      }
+    };
+  } 
+
+  function keyup(e) {
+  //setting your input text to the global Javascript Variable for every key press
+  inputTextValue = e.target.value;
+
+  //listens for you to press the ENTER key, at which point your web address will change to the one you have input in the search box
+  if (e.keyCode == 13) {
+    document.getElementById("term").innerHTML = inputTextValue;
+    let pubdata = searchPubMed('("tractor"[All Fields] OR "tractors"[All Fields]) AND ("accidence"[All Fields] OR "accident s"[All Fields] OR "accidents"[MeSH Terms] OR "accidents"[All Fields] OR "accident"[All Fields])')
+    .then(fetchResults)
+    .then(parseResults)
+    .then(displayResults);
+  }
+  
+}
+
+async function getData() {
+  const response = await fetch(
+    'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=science[journal]+AND+breast+cancer+AND+2008[pdat]&usehistory=y'
+  );
+}
+
+buttonsend.addEventListener("click", function(){
+  let query = document.getElementById("sterm").value;
+  document.getElementById("term").innerHTML = query;
+  searchPubMed(query)
+  .then(fetchResults)
+  .then(parseResults)
+  .then(displayResults);
+}) 
+</script>
