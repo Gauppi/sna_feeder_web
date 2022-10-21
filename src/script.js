@@ -2,20 +2,27 @@
 const pmidList = [];
 const authorList = [];
 const citidList = [];
+let articles = [];
+
 const mapArtCit = new Map();
 const mapAuthors = new Map();
 const mapArticles = new Map();
+
+const nodes = [];
+const links = [];
 
 
 // Artikel Klasse, um jeden Artikel zu speichern
 
 class Article{
-    constructor(pmid, title, authors, pubdate){
+
+    constructor(pmid, title, authors, pubdate, cited_by){
         this.pmid = pmid;
         this.title = title;
         this.authors = authors;
         this.pubdate = pubdate;
-        this.citidList = "";
+        this.citidList = cited_by;
+        console.log("Artikel erstellt");
     }
 
 }
@@ -27,7 +34,13 @@ class Author{
     }
 }
 
+/**
+ * Create a connection to the Pubmed Server.
+ *
+ * @alias searchPubMed
+ */
 async function searchPubMed(term) {
+    articles = [];
     return $.ajax({
         url: 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi',
         data: {
@@ -40,6 +53,11 @@ async function searchPubMed(term) {
     });
 }
 
+/**
+ * Fetch the data from Pubmed. The response will be a JSON Format.
+ *
+ * @alias fetchResults
+ */
 function fetchResults(response) {
     return $.ajax({
         url: 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi',
@@ -81,9 +99,12 @@ function parseResults(response) {
         });
     }
 
+
 function displayResults(articles) {
     var output = $('#output');
     var article_cnt = 0;
+    const tab = $('#tab'); 
+
     $.each(articles, function (i, article) {
         article_cnt += 1;
         var item = $('<li/>').appendTo(output);
@@ -116,12 +137,12 @@ function displayResults(articles) {
 
         $('<hr width="95%" align="center" height="25px" background-color="blue">').appendTo(item);
     });
-
+ 
     //Gesamtmenge an gefundenen Artikel anzeigen
-    console.log(article_cnt);
+    //console.log(article_cnt);
     const nres = document.getElementById("nresults");
     nres.textContent = article_cnt.toString() + " Artikel gefunden:";
-    console.log(pmidList);
+    //console.log(pmidList);
 
     for(i = 0; i < article_cnt; i++){
         citeobj = searchCitation(pmidList[i]);
@@ -129,7 +150,8 @@ function displayResults(articles) {
         var finalObj = $.extend(pmidList[i], citeobj);
         console.log(finalObj);
     }
-    
+    console.log("Finito");
+    console.log(articles);
 } 
 
 function searchCitation(pmid){
@@ -145,16 +167,19 @@ function searchCitation(pmid){
     request.responseType = "json";
     request.onload = function () {
         console.log(request.response);
+        let art = new Article(request.response.pmid, request.response.title, request.response.authors, request.response.pubdate, request.response.cited_by);
+        articles.push(art);
         // Map Pubmed ID with the corresponding authors and cititionIDs
         mapAuthors.set(request.response.pmid, request.response.authors);
         mapArticles.set(request.response.pmid, request.response.cited_by);
         //Log PMID-> Author Map and PMID-> CititionsPMID Map
-        console.log(mapAuthors);
-        console.log(mapArticles);
+        //console.log(mapAuthors);
+        //console.log(mapArticles);
         return request.response;
     };
     request.send();
 }
+
 
 async function fetchCitation(pmid){
     let dataObject;
@@ -180,6 +205,9 @@ function searchCitArticle(pmid){
 function getNumberofResults(){
     return article_cnt;
 }
+
+
+const a = new Article();
 /*
 function parseCiteResults(dataObj) {
 
@@ -203,3 +231,90 @@ function parseCiteResults(dataObj) {
     });
 }
 */
+
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
+
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+var simulation = d3.forceSimulation()
+    .force("link", d3.forceLink().id(function(d) { return d.id; }))
+    .force("charge", d3.forceManyBody())
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
+d3.json("miserables.json", function(error, graph) {
+  if (error) throw error;
+
+  var link = svg.append("g")
+      .attr("class", "links")
+    .selectAll("line")
+    .data(graph.links)
+    .enter().append("line")
+      .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+  var node = svg.append("g")
+      .attr("class", "nodes")
+    .selectAll("g")
+    .data(graph.nodes)
+    .enter().append("g")
+
+  var circles = node.append("circle")
+    .attr("r", 5)
+    .attr("fill", function(d) { return color(d.group); });
+
+  // Create a drag handler and append it to the node object instead
+  var drag_handler = d3.drag()
+      .on("start", dragstarted)
+      .on("drag", dragged)
+      .on("end", dragended);
+
+  drag_handler(node);
+  
+  var lables = node.append("text")
+      .text(function(d) {
+        return d.id;
+      })
+      .attr('x', 6)
+      .attr('y', 3);
+
+  node.append("title")
+      .text(function(d) { return d.id; });
+
+  simulation
+      .nodes(graph.nodes)
+      .on("tick", ticked);
+
+  simulation.force("link")
+      .links(graph.links);
+
+  function ticked() {
+    link
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node
+        .attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        })
+  }
+});
+
+function dragstarted(d) {
+  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragged(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
+
+function dragended(d) {
+  if (!d3.event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+}

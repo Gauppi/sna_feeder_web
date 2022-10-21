@@ -11,7 +11,7 @@ body {
         color: #ddd;
         text-decoration-line: underline;
         text-decoration-color: white;
-        margin-left: 10px;
+        margin-left: 280px;
   }
   h2 {
         color: white;
@@ -22,7 +22,7 @@ body {
   
   input[type=text] {
         width: 80%;
-        height: 220 px;
+        height: 200 px;
         box-sizing: border-box;
         border: 2px solid #ccc;
         border-radius: 4px;
@@ -30,13 +30,12 @@ body {
         font-family: sans-serif;
         font-weight: 300;
         background-color: white;
-        background-image: url('search.png');
+        background-image: url('/public/search.png');
         background-size: 64px 64px;
         background-position: 10px 10px; 
         background-repeat: no-repeat;
         padding: 24px 80px 24px 80px;
-        margin-left: 10px;
-    
+        margin-left: 10px;    
   }
   
   table {
@@ -80,8 +79,10 @@ body {
         box-shadow: 0 0 0.5em 0 rgba(0,0,0,0.3);
         padding: 0.1em;
         position: absolute;
+        
     }
     
+
     .filters__list li {
         display: flex;
         align-items: center;
@@ -110,10 +111,13 @@ body {
         text-transform: uppercase;
         color: #f5f5f5;
         font-weight: 600;
+        font-size: large;
         letter-spacing: 0.05em;
         border: 0;
         outline: 0;
         text-align: left;
+        min-width: 160px;
+        min-height: 80px;
     }
   
     .button {
@@ -121,6 +125,7 @@ body {
         padding: 1em 2em;
         text-transform: uppercase;
         font-weight: 600;
+        font-size: large;
         letter-spacing: 0.05em;
         border: 0;
         outline: 0;
@@ -131,6 +136,7 @@ body {
         justify-content: space-between;
         color: #f5f5f5;
         cursor: pointer;
+        margin-left: 10px;
     }
     
     .button::after {
@@ -143,4 +149,31 @@ body {
         content: "✓";
     }
   
-  
+    .links line {
+        stroke: #999;
+        stroke-opacity: 0.6;
+      }
+      
+      .nodes circle {
+        stroke: #fff;
+        stroke-width: 1.5px;
+      }
+      
+      text {
+        font-family: sans-serif;
+        font-size: 10px;
+      }
+
+
+.table td,
+.table th {
+    padding: 10px 20px;
+}
+
+.table tbody tr:nth-of-type(even) {
+    background: #eeeeee;
+}
+
+.table tbody tr:last-of-type {
+    border-bottom: 2px solid #009578;
+}
